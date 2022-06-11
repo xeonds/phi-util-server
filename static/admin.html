@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>PhiUtil|Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <link rel="stylesheet" href="https://unpkg.zhimg.com/bootstrap@4.1.3/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="container-fluid" style="padding:0;">
+            <div id="header" class="d-flex flex-row align-items-center justify-content-center bg-light w-100" style="padding:2rem;">
+                <h3><span class="text-primary">Phigros</span><span class="text-secondary">Util</span>|Admin</h3>
+
+            </div>
+            <!-- Nav tabs -->
+            <ul class="nav nav-pills justify-content-center" style="padding:1rem;">
+                <li class="nav-item"> <a class="nav-link active" data-toggle="pill" href="#db">数据库管理</a></li>
+                <li class="nav-item"> <a class="nav-link" data-toggle="pill" href="#rktable">定数表上传</a></li>
+                <li class="nav-item"> <a class="nav-link" data-toggle="pill" href="#notify">通知</a></li>
+            </ul>
+            <!--main-->
+            <div id="main" class="d-flex flex-column align-items-center tab-content" style="padding:2rem;min-height:80vh;">
+                <div class="tab-pane active" id="db" style="width:100%;max-width:768px;">
+                    <div class="d-flex flex-row align-items-center justify-content-between">
+                        <h3>数据库管理</h3>
+                    </div>
+                    <h4 class="text-secondary">更新数据</h4>
+                    <div class="alert alert-danger alert-dismissible fade show">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>重要 </strong>请务必保证输入正确的曲名，并且一定注意<strong>使用英文逗号</strong>分割定数
+                    </div>
+                    <form action="index.php?admin&rank_update" method="post">
+                        <label>曲名（从下面的定数表复制）</label>
+                        <input type="text" name="name" class="form-control" />
+                        <label>定数(用英文逗号','分隔，'rm'删除曲目)</label>
+                        <input type="text" name="rank" class="form-control" /><br/>
+                        <p>
+                            正确的提交记录类似于：<br/>
+                            <code>1,4,9,16</code> （难度依次为EZ,HD,IN,AT）<br/>
+                            <code>1,1,4</code> （难度依次为EZ,HD,IN）<br/>
+                            <code>rm</code> （删除该曲目）
+                        </p><br/>
+                        <button type="submit" class="btn btn-primary">提交</button>
+                    </form><br>
+                    <h4 class="text-secondary">Rank Table</h4>
+                    <table class="table table-responsive-sm" v-if="rank!=''" border="0">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">曲名</th>
+                                <th colspan="4">定数</th>
+                            </tr>
+                            <tr>
+                                <th>EZ</th>
+                                <th>HD</th>
+                                <th>IN</th>
+                                <th>AT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="row in rank">
+                                <td>{{row.name}}</td>
+                                <td v-for="r in row.rank">{{r}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane" id="rktable" style="width:100%;max-width:768px;">
+                    <div class="d-flex flex-row align-items-center justify-content-between">
+                        <h3>定数表上传</h3>
+                        （咕
+                    </div>
+                </div>
+                <div class="tab-pane" id="notify" style="width:100%;max-width:768px;">
+                    <div class="d-flex flex-row align-items-center justify-content-between">
+                        <h3>通知</h3>
+                    </div>
+                    <p>Use F12 for details.</p>
+                </div>
+            </div>
+            <!--footer-->
+            <div id="footer" class="d-flex flex-column align-items-center justify-content-center bg-light" style="padding:2rem;">
+                <p>&copy; 2022 <span class="text-primary">|</span> xeonds</p>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.zhimg.com/jquery@3.3.1"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.26.0/axios.min.js"></script>
+    <script src="https://unpkg.zhimg.com/bootstrap@4.1.3/dist/js/bootstrap.min.js"></script>
+    <script src="https://unpkg.zhimg.com/vue@2"></script>
+    <script>
+        new Vue({
+            el: '#app ',
+            data: {
+                rank: '',
+                warn: {
+                    rks: false,
+                    rank: false
+                },
+                baseUrl: 'index.php?api&'
+            },
+            created: function() {
+                that = this
+                that.get_ranks()
+            },
+            methods: {
+                get_ranks: function() {
+                    that = this
+                    axios.get(that.baseUrl + 'rank').then(function(res) {
+                        that.rank = res.data
+                        that.rank.sort(function(a, b) {
+                            return b.rank[2] - a.rank[2]
+                        })
+                    })
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
